@@ -16,6 +16,7 @@ const Home = () => {
     setCurrentIndex((prev) => (prev - 1 + planets.length) % planets.length);
   };
 
+  // Home page always uses dark mode for better visuals
   return (
     <div className="h-screen flex flex-col justify-between pt-10 pb-24 px-6 bg-black">
       
@@ -29,7 +30,7 @@ const Home = () => {
       {/* We give it absolute positioning to fill the middle of the screen */}
       <div className="absolute inset-0 flex items-center justify-center z-0">
         <div className="w-full h-2/3">
-           <Scene3D texturePath={planets[currentIndex].texture} />
+           <Scene3D texturePath={planets[currentIndex].texture} planetColor={planets[currentIndex].color} />
         </div>
       </div>
       
@@ -40,7 +41,7 @@ const Home = () => {
           <h1 className="text-5xl font-bold tracking-widest text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-600 mb-2">
             {planets[currentIndex].name}
           </h1>
-          <p className="text-xs text-gray-400 uppercase tracking-widest">
+          <p className="text-xs uppercase tracking-widest text-gray-400">
             {planets[currentIndex].tagline}
           </p>
         </div>

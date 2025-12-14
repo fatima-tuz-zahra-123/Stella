@@ -4,10 +4,11 @@ import { OrbitControls, Stars, Bounds } from "@react-three/drei"; // <--- Import
 import { EffectComposer, Bloom, Noise, Vignette } from "@react-three/postprocessing";
 import Planet3D from "./Planet3D";
 
-const Scene3D = ({ texturePath }) => {
+const Scene3D = ({ texturePath, planetColor }) => {
   return (
-    <Canvas shadows camera={{ position: [0, 0, 6], fov: 45 }}>
+    <Canvas shadows camera={{ position: [0, 0, 6], fov: 45 }} style={{ background: '#000000' }}>
       <ambientLight intensity={0.1} />
+      <pointLight position={[0, 0, 0]} intensity={2} color="#FFD700" />
       <directionalLight castShadow position={[5, 3, 5]} intensity={3} shadow-mapSize={[1024, 1024]} />
       <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade />
 
@@ -23,7 +24,7 @@ const Scene3D = ({ texturePath }) => {
       <Suspense fallback={null}>
         {/* 2. Wrap the Planet in Bounds. "margin" controls how close the zoom gets (1.2 = 20% padding) */}
         <Bounds fit clip observe margin={1.5}>
-           <Planet3D texturePath={texturePath} />
+           <Planet3D texturePath={texturePath} planetColor={planetColor} />
         </Bounds>
       </Suspense>
     </Canvas>

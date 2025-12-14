@@ -118,8 +118,46 @@ export const planets = [
       discoverer: "William Herschel",
       moons: ["Titania", "Miranda", "Oberon", "Cupid", "Umbriel", "Cressida", "Ariel", "MORE"],
     },
-    texture: "/textures/8k_uranus.jpg",
+    texture: "/textures/2k_uranus.jpg",
     color: "#4FD0E7",
+  },
+  {
+    id: 9,
+    name: "NEPTUNE",
+    tagline: "THE WINDY PLANET",
+    description: "Neptune is the eighth and farthest known planet from the Sun. It is the fourth-largest planet by diameter and the third-largest by mass. Neptune is similar in composition to Uranus, and both have bulk chemical compositions which differ from that of the larger gas giants Jupiter and Saturn.",
+    stats: {
+      distanceFromSun: "4.515 billion km",
+      lengthOfDay: "16.1 hours",
+      orbitalPeriod: "165 years",
+      radius: "24,622 km",
+      mass: "1.02413 × 10²⁶ kg",
+      gravity: "11.15 m/s²",
+      discovered: "1846",
+      discoverer: "Urbain Le Verrier, Johann Galle",
+      moons: ["Triton", "Nereid", "Proteus", "Larissa", "Despina"],
+    },
+    texture: "/textures/2k_neptune.jpg",
+    color: "#4166F5",
+  },
+  {
+    id: 8,
+    name: "PLUTO",
+    tagline: "THE DWARF PLANET",
+    description: "Pluto is a dwarf planet in the Kuiper belt, a ring of bodies beyond the orbit of Neptune. It was the first and largest Kuiper belt object to be discovered. Pluto was discovered by Clyde Tombaugh in 1930 and was originally considered the ninth planet from the Sun.",
+    stats: {
+      distanceFromSun: "5.9 billion km",
+      lengthOfDay: "6.4 Earth days",
+      orbitalPeriod: "248 Earth years",
+      radius: "1,188.3 km",
+      mass: "1.303 × 10²² kg",
+      gravity: "0.62 m/s²",
+      discovered: "1930",
+      discoverer: "Clyde Tombaugh",
+      moons: ["Charon", "Nix", "Hydra", "Kerberos", "Styx"],
+    },
+    texture: null, // No texture for Pluto
+    color: "#8B7355", // Brownish-tan color appropriate for Pluto
   },
 ];
 
