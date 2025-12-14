@@ -9,7 +9,7 @@ const Login = () => {
       {/* Logo Placeholder */}
       <div className="mb-12 relative">
         <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-purple-500 to-blue-500 blur-xl absolute -top-2 -left-2"></div>
-        <img src="/logo.png" alt="Stella Logo" className="w-20 h-20 relative z-10" />
+        <img src="/favicon.png" alt="Stella Logo" className="w-20 h-20 relative z-10" />
       </div>
 
       <h1 className="text-3xl font-bold mb-8">Welcome Back</h1>
