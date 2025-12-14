@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const Planet = require('./models/Planet');
+const Planet = require('./models/Planets');
 
 const app = express();
 app.use(cors());

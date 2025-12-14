@@ -1,26 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-import Scene3D from '../components/Scene3D'; // Import the scene
-
-const mockPlanets = [
-  // UPDATE THESE PATHS to match your texture files in public/textures/
-  { id: 1, name: "MERCURY", texture: "../textures/8k_mercury.jpg" },
-  { id: 2, name: "VENUS", texture: "../textures/8k_venus_surface.jpg" },
-  { id: 3, name: "EARTH", texture: "../textures/8k_earth_daymap.jpg" },
-  { id: 4, name: "MARS", texture: "../textures/8k_mars.jpg" },
-];
+import Scene3D from '../components/Scene3D';
+import { planets } from '../data/planets';
 
 const Home = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const navigate = useNavigate();
 
   const nextPlanet = () => {
-    setCurrentIndex((prev) => (prev + 1) % mockPlanets.length);
+    setCurrentIndex((prev) => (prev + 1) % planets.length);
   };
 
   const prevPlanet = () => {
-    setCurrentIndex((prev) => (prev - 1 + mockPlanets.length) % mockPlanets.length);
+    setCurrentIndex((prev) => (prev - 1 + planets.length) % planets.length);
   };
 
   return (
@@ -35,18 +28,22 @@ const Home = () => {
       {/* 3D SCENE CONTAINER */}
       {/* We give it absolute positioning to fill the middle of the screen */}
       <div className="absolute inset-0 flex items-center justify-center z-0">
-        <div className="w-full h-2/3"> {/* Controls the size of the 3D window */}
-           {/* Pass the current planet's texture to the scene */}
-           <Scene3D texturePath={mockPlanets[currentIndex].texture} />
+        <div className="w-full h-2/3">
+           <Scene3D texturePath={planets[currentIndex].texture} />
         </div>
       </div>
       
       {/* UI Overlay (Name & Controls) */}
       <div className="z-10 flex flex-col items-center w-full">
         {/* Planet Name */}
-        <h1 className="text-5xl font-bold tracking-widest text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-600 mb-8">
-          {mockPlanets[currentIndex].name}
-        </h1>
+        <div className="text-center mb-4">
+          <h1 className="text-5xl font-bold tracking-widest text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-600 mb-2">
+            {planets[currentIndex].name}
+          </h1>
+          <p className="text-xs text-gray-400 uppercase tracking-widest">
+            {planets[currentIndex].tagline}
+          </p>
+        </div>
 
         {/* Controls */}
         <div className="flex items-center justify-between w-full max-w-xs px-4">
@@ -55,7 +52,7 @@ const Home = () => {
           </button>
           
           <button 
-            onClick={() => navigate(`/planet/${mockPlanets[currentIndex].id}`)}
+            onClick={() => navigate(`/planet/${planets[currentIndex].id}`)}
             className="px-8 py-3 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full font-bold shadow-lg shadow-purple-900/50 hover:scale-105 transition text-white"
           >
             Explore planet
