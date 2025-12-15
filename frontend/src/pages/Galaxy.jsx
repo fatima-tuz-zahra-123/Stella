@@ -6,7 +6,7 @@ import { FaPlus, FaMinus, FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import * as THREE from 'three';
 import { useTheme } from '../context/useTheme';
 import SolarSystem from '../components/SolarSystem';
-import { useSearchParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { planets } from '../data/planets';
 
 // Helper function to format planet name (capitalize first letter, lowercase rest)
@@ -26,7 +26,7 @@ const entities = [
 
 const Galaxy = () => {
   const { isDark } = useTheme();
-  const [searchParams] = useSearchParams();
+  const location = useLocation();
   const [zoom] = useState(1); // Used for scaling orbital distances in SolarSystem
   const [time, setTime] = useState(0);
   const [showOrbits, setShowOrbits] = useState(true);
@@ -62,19 +62,39 @@ const Galaxy = () => {
     return () => clearInterval(interval);
   }, [speed]);
 
-  // Position camera at planet if planetId is in URL
+  // Position camera at planet if planetId is in URL (e.g., from "Take a trip")
   React.useEffect(() => {
-    const planetId = searchParams.get('planetId');
-    if (planetId && orbitControlsRef.current) {
-      const planetIndex = planets.findIndex(p => p.id === parseInt(planetId));
-      if (planetIndex !== -1) {
-        // Set focused entity to the planet (index + 1 because Sun is index 0)
-        setFocusedEntityIndex(planetIndex + 1);
-        focusOnEntity(planetIndex + 1);
-      }
+    const params = new URLSearchParams(location.search);
+    const planetId = params.get('planetId');
+
+    if (!planetId) return;
+
+    const targetIndex = planets.findIndex(p => p.id === parseInt(planetId, 10));
+    if (targetIndex === -1) return;
+
+    let attempts = 0;
+    const maxAttempts = 30;
+
+    const tryFocus = () => {
+      const controls = orbitControlsRef.current;
+      if (!controls) return false;
+      const entityIndex = targetIndex + 1; // Sun is 0
+      setFocusedEntityIndex(entityIndex);
+      focusOnEntity(entityIndex, { forceMinDistance: true });
+      return true;
+    };
+
+    if (!tryFocus()) {
+      const interval = setInterval(() => {
+        attempts += 1;
+        if (tryFocus() || attempts >= maxAttempts) {
+          clearInterval(interval);
+        }
+      }, 50);
+      return () => clearInterval(interval);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams]);
+  }, [location.search]);
 
   const handleZoomIn = () => {
     if (orbitControlsRef.current) {
@@ -113,9 +133,10 @@ const Galaxy = () => {
   };
 
   // Focus camera on entity
-  const focusOnEntity = (entityIndex) => {
+  const focusOnEntity = (entityIndex, options = {}) => {
     if (!orbitControlsRef.current) return;
     if (entityIndex < 0 || entityIndex >= entities.length) return;
+    const { forceMinDistance = false } = options;
     
     const entity = entities[entityIndex];
     const orbitalDistances = {
@@ -131,7 +152,9 @@ const Galaxy = () => {
     const currentDistance = currentPosition.distanceTo(currentTarget);
     
     // Preserve distance if it's valid (between min and max zoom limits)
-    const preservedDistance = currentDistance >= 3 && currentDistance <= 50 ? currentDistance : (entity.type === 'sun' ? 8 : 2);
+    const minDistance = orbitControlsRef.current.minDistance || 3;
+    const preservedDistanceRaw = currentDistance >= 3 && currentDistance <= 50 ? currentDistance : (entity.type === 'sun' ? 8 : 2);
+    const preservedDistance = forceMinDistance ? minDistance : preservedDistanceRaw;
     
     // Calculate direction from current position to current target to preserve camera angle
     const currentDirection = new THREE.Vector3().subVectors(currentPosition, currentTarget).normalize();
@@ -239,7 +262,7 @@ const Galaxy = () => {
     }
   }, [time, focusedEntityIndex, speed]);
 
-  const speedOptions = [0.5, 1, 2, 4, 16];
+  const speedOptions = [0.5, 1, 2, 4, 8];
   const currentSpeedIndex = speedOptions.indexOf(speed);
   
   const handleSpeedDecrease = () => {

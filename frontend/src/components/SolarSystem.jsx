@@ -1,4 +1,4 @@
-import React, { useRef, Suspense } from 'react';
+import React, { useRef, Suspense, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { useTexture, Stars } from '@react-three/drei';
 import { planets } from '../data/planets';
@@ -33,17 +33,56 @@ const orbitalSpeeds = {
 
 const Sun = () => {
   const sunTexture = useTexture('/textures/8k_sun.jpg');
+  const glowMaterial = useMemo(
+    () =>
+      new THREE.ShaderMaterial({
+        transparent: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        uniforms: {
+          uColor: { value: new THREE.Color('#FFEE88') },
+          // Outer radius for falloff (sun radius 0.5 * glow scale 1.5 = 0.75)
+          uMaxR: { value: 0.85 },
+        },
+        vertexShader: `
+          varying vec3 vPos;
+          void main() {
+            vPos = (modelMatrix * vec4(position, 1.0)).xyz;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+          }
+        `,
+        fragmentShader: `
+          varying vec3 vPos;
+          uniform vec3 uColor;
+          uniform float uMaxR;
+          void main() {
+            float r = length(vPos);
+            // Soft falloff: high alpha near center, smooth to 0 at uMaxR
+            float alpha = pow(max(0.0, 1.0 - smoothstep(0.0, uMaxR, r)), 1.2);
+            gl_FragColor = vec4(uColor, alpha * 0.9);
+          }
+        `,
+      }),
+    []
+  );
 
   return (
-    <mesh>
-      <sphereGeometry args={[0.5, 32, 32]} />
-      <meshStandardMaterial
-        map={sunTexture}
-        color="#FFD700"
-        emissive="#FFA500"
-        emissiveIntensity={0.2}
-      />
-    </mesh>
+    <group>
+      <mesh>
+        <sphereGeometry args={[0.5, 32, 32]} />
+        <meshStandardMaterial
+          map={sunTexture}
+          color="#FFD700"
+          emissive="#FFA500"
+          emissiveIntensity={0.35}
+        />
+      </mesh>
+
+      {/* Soft gradient glow shell for the sun */}
+      <mesh scale={1.5} material={glowMaterial}>
+        <sphereGeometry args={[0.5, 32, 32]} />
+      </mesh>
+    </group>
   );
 };
 
@@ -225,10 +264,10 @@ const OrbitalRing = ({ distance, showOrbits }) => {
 const SolarSystem = ({ time, zoom, showOrbits, speedMultiplier = 1 }) => {
   return (
     <>
-      <ambientLight intensity={0.1} />
+      <ambientLight intensity={0.05} />
       {/* Point light at sun center for realistic shading */}
-      <pointLight position={[0, 0, 0]} intensity={9} color="#FFD700" distance={50} decay={2} />
-      <Stars radius={200} depth={100} count={5000} fade />
+      <pointLight position={[0, 0, 0]} intensity={10} color="#FFD700" distance={50} decay={2} />
+      <Stars radius={180} depth={5} count={10000} fade />
       
       <Suspense fallback={null}>
         <Sun />

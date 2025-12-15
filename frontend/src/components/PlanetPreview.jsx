@@ -66,8 +66,8 @@ const PlanetPreviewScene = ({ texturePath, planetColor }) => {
         style={{ background: 'transparent' }}
         gl={{ alpha: true, antialias: true }}
       >
-        <ambientLight intensity={0.6} />
-        <directionalLight position={[2, 2, 2]} intensity={0.8} />
+        <ambientLight intensity={0.2} />
+        <directionalLight position={[2, 2, 2]} intensity={3.0} />
         <pointLight position={[-2, -2, -2]} intensity={0.3} />
         <PlanetPreview texturePath={texturePath} planetColor={planetColor} />
       </Canvas>
