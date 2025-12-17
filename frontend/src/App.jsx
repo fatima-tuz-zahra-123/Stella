@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { ThemeProvider } from './context/ThemeProvider';
 import { useTheme } from './context/useTheme';
 import Login from './pages/Login';
@@ -17,10 +17,16 @@ import Navbar from './components/Navbar';
 
 function AppContent() {
   const { isDark } = useTheme();
+  const location = useLocation();
+  const isDesktopRoute = location.pathname.startsWith('/desktop');
+
+  const mobileClasses = `min-h-screen font-sans max-w-md mx-auto overflow-hidden shadow-2xl border-x ${isDark ? 'bg-black text-white border-gray-800' : 'bg-gray-50 text-black border-gray-200'} relative`;
+  const desktopClasses = `min-h-screen font-sans overflow-hidden ${isDark ? 'bg-black text-white' : 'bg-gray-50 text-black'} relative`;
 
   return (
-    <div className={`min-h-screen font-sans max-w-md mx-auto overflow-hidden shadow-2xl border-x ${isDark ? 'bg-black text-white border-gray-800' : 'bg-gray-50 text-black border-gray-200'} relative`}>
+    <div className={isDesktopRoute ? desktopClasses : mobileClasses}>
       <Routes>
+        {/* Mobile Routes */}
         <Route path="/splash" element={<Splash />} />
         <Route path="/" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
@@ -33,8 +39,8 @@ function AppContent() {
         <Route path="/settings" element={<Settings />} />
         <Route path="/password" element={<PasswordChange />} />
       </Routes>
-      {/* Bottom Navigation matches your design */}
-      <Navbar />
+      {/* Bottom Navigation: show on mobile routes only */}
+      {!isDesktopRoute && <Navbar />}
     </div>
   );
 }

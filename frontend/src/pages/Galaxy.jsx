@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import { EffectComposer, Bloom, Noise, Vignette } from '@react-three/postprocessing';
@@ -278,8 +278,21 @@ const Galaxy = () => {
   };
 
 
+  const [isLoading, setIsLoading] = React.useState(true);
+
   return (
     <div className={`h-screen ${isDark ? 'bg-black text-white' : 'bg-gray-50 text-black'} relative overflow-hidden`}>
+      {/* Loading Indicator */}
+      {isLoading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black/90 z-50">
+          <div className="text-center">
+            <div className="inline-block animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-purple-500 mb-4"></div>
+            <p className="text-white text-lg font-semibold">Loading Solar System...</p>
+            <p className="text-gray-400 text-sm mt-2">Preparing 3D models and textures</p>
+          </div>
+        </div>
+      )}
+
       {/* Top Right Controls */}
       <div className="absolute top-6 right-6 z-10 flex flex-col gap-3">
         {/* Orbit Toggle */}
@@ -329,6 +342,8 @@ const Galaxy = () => {
           onCreated={({ camera }) => {
             // Initially point camera at sun
             camera.lookAt(0, 0, 0);
+            // Hide loading indicator after canvas is created and give time for initial render
+            setTimeout(() => setIsLoading(false), 800);
           }}
         >
           <ambientLight intensity={0.1} />
@@ -349,7 +364,9 @@ const Galaxy = () => {
             autoRotate={false}
           />
 
-          <SolarSystem time={time} zoom={zoom} showOrbits={showOrbits} speedMultiplier={speed} />
+          <Suspense fallback={null}>
+            <SolarSystem time={time} zoom={zoom} showOrbits={showOrbits} speedMultiplier={speed} />
+          </Suspense>
         </Canvas>
       </div>
 

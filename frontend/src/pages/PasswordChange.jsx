@@ -14,6 +14,7 @@ const PasswordChange = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -35,11 +36,21 @@ const PasswordChange = () => {
       return;
     }
 
+    // Show confirmation modal
+    setShowConfirmationModal(true);
+  };
+
+  const handleConfirmPasswordChange = () => {
     // Simulate password change
+    setShowConfirmationModal(false);
     setSuccess(true);
     setTimeout(() => {
       navigate('/profile');
     }, 2000);
+  };
+
+  const handleCancelPasswordChange = () => {
+    setShowConfirmationModal(false);
   };
 
   return (
@@ -138,6 +149,36 @@ const PasswordChange = () => {
           </button>
         </form>
       </div>
+
+      {/* Confirmation Modal */}
+      {showConfirmationModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className={`rounded-lg p-8 max-w-md w-full ${isDark ? 'bg-gray-900 text-white' : 'bg-white text-black'}`}>
+            <h2 className="text-2xl font-bold mb-4">Confirm Password Change</h2>
+            <p className={`mb-6 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+              Are you sure you want to change your password? This action cannot be undone.
+            </p>
+            <div className="flex gap-4">
+              <button
+                onClick={handleCancelPasswordChange}
+                className={`flex-1 px-4 py-3 rounded-lg font-semibold transition-all duration-200 ${
+                  isDark
+                    ? 'bg-gray-700 text-white hover:bg-gray-600'
+                    : 'bg-gray-200 text-black hover:bg-gray-300'
+                }`}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmPasswordChange}
+                className="flex-1 bg-purple-600 text-white px-4 py-3 rounded-lg font-semibold hover:bg-purple-700 transition-all duration-200"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
